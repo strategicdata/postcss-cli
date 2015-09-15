@@ -119,12 +119,13 @@ function processCSS(processor, input, output, fn) {
       if (typeof result.warnings === 'function') {
         result.warnings().forEach(console.error);
       }
-      fn(null, result.css);
+      fn(null, result);
     }
 
     var opts = {
       from: input,
-      to: output
+      to: output,
+      map: true,
     };
 
     if (syntax) {
@@ -167,10 +168,11 @@ function onError(err, keepAlive) { // XXX: avoid overloaded signature?
   }
 }
 
-function writeFile(name, content, fn) {
+function writeFile(name, result, fn) {
   if (!name) {
-    process.stdout.write(content);
+    process.stdout.write(result.css);
     return fn();
   }
-  fs.writeFile(name, content, fn);
+  fs.writeFile(name, result.css);
+  fs.writeFile(name + '.map', result.map, fn);
 }
